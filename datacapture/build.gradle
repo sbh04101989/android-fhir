@@ -49,6 +49,7 @@ dependencies {
     implementation deps.lifecycle.livedata_ktx
     implementation deps.lifecycle.viewmodel_ktx
     implementation deps.material
+    implementation deps.constraint_layout
     implementation project(path: ':fhirengine')
 
     testImplementation deps.atsl.core
