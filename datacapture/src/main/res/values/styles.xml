@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- The theme applied by default to the questionnaire rendered using QuestionnaireFragment. In
+         order to override the style attributes defined in this theme, extend this theme and use the
+         extended theme to initialize QuestionnaireFragment. -->
     <style name="QuestionnaireTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="groupHeaderTextAppearance">@style/TextAppearance.MaterialComponents.Subtitle1</item>
     </style>
