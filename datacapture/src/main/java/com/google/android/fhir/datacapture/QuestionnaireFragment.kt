@@ -22,6 +22,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.annotation.StyleRes
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
@@ -30,36 +32,43 @@ import androidx.recyclerview.widget.RecyclerView
 import ca.uhn.fhir.context.FhirContext
 import org.hl7.fhir.r4.model.Questionnaire
 
-class QuestionnaireFragment(private val questionnaire: Questionnaire) : Fragment() {
-    private val viewModel: QuestionnaireViewModel by viewModels {
-        QuestionnaireViewModelFactory(questionnaire)
+class QuestionnaireFragment(
+  private val questionnaire: Questionnaire,
+  @StyleRes private val themeId: Int?
+) : Fragment() {
+  private val viewModel: QuestionnaireViewModel by viewModels {
+    QuestionnaireViewModelFactory(questionnaire)
+  }
+
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
+    return inflater
+      .cloneInContext(ContextThemeWrapper(activity, themeId ?: R.style.QuestionnaireTheme as Int))
+      .inflate(R.layout.questionnaire_fragment, container, false)
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    view.findViewById<TextView>(R.id.title).text = viewModel.questionnaire.title
+
+    val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
+    val adapter = QuestionnaireItemAdapter(viewModel.questionnaireItemViewItemList)
+    recyclerView.adapter = adapter
+
+    view.findViewById<Button>(R.id.submit).setOnClickListener {
+      val serializedResponse = FhirContext.forR4().newJsonParser()
+        .encodeResourceToString(viewModel.questionnaireResponse)
+      setFragmentResult(
+        QUESTIONNAIRE_RESPONSE_REQUEST_KEY,
+        bundleOf(QUESTIONNAIRE_RESPONSE_BUNDLE_KEY to serializedResponse)
+      )
     }
+  }
 
-    override fun onCreateView(
-      inflater: LayoutInflater,
-      container: ViewGroup?,
-      savedInstanceState: Bundle?
-    ) = inflater.inflate(R.layout.questionnaire_fragment, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        view.findViewById<TextView>(R.id.title).text = viewModel.questionnaire.title
-
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
-        val adapter = QuestionnaireItemAdapter(viewModel.questionnaireItemViewItemList)
-        recyclerView.adapter = adapter
-
-        view.findViewById<Button>(R.id.submit).setOnClickListener {
-            val serializedResponse = FhirContext.forR4().newJsonParser()
-                .encodeResourceToString(viewModel.questionnaireResponse)
-            setFragmentResult(
-                QUESTIONNAIRE_RESPONSE_REQUEST_KEY,
-                bundleOf(QUESTIONNAIRE_RESPONSE_BUNDLE_KEY to serializedResponse)
-            )
-        }
-    }
-
-    companion object {
-        const val QUESTIONNAIRE_RESPONSE_REQUEST_KEY = "questionnaire-response-request-key"
-        const val QUESTIONNAIRE_RESPONSE_BUNDLE_KEY = "questionnaire-response-bundle-key"
-    }
+  companion object {
+    const val QUESTIONNAIRE_RESPONSE_REQUEST_KEY = "questionnaire-response-request-key"
+    const val QUESTIONNAIRE_RESPONSE_BUNDLE_KEY = "questionnaire-response-bundle-key"
+  }
 }

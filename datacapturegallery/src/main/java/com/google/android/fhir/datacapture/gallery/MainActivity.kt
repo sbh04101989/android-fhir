@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         // Modifications to the questionnaire
         questionnaire.title = "My questionnaire"
 
-        val fragment = QuestionnaireFragment(questionnaire)
+        val fragment = QuestionnaireFragment(questionnaire, R.style.MyQuestionnaireTheme)
         supportFragmentManager.setFragmentResultListener(
             QuestionnaireFragment.QUESTIONNAIRE_RESPONSE_REQUEST_KEY,
             this,

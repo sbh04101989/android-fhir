@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="QuestionnaireTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="groupHeaderTextAppearance">@style/TextAppearance.MaterialComponents.Subtitle1</item>
+    </style>
+</resources>
