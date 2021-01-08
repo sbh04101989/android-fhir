@@ -40,9 +40,7 @@ class MainActivity : AppCompatActivity() {
         // Modifications to the questionnaire
         questionnaire.title = "My questionnaire"
 
-        val questionnaireWithDuplicateItems = duplicateItemsInQuestionnaire(questionnaire,100)
-        questionnaireWithDuplicateItems.title = "Questionnaire with duplicate"
-        val fragment = QuestionnaireFragment(questionnaireWithDuplicateItems)
+        val fragment = QuestionnaireFragment(questionnaire)
         supportFragmentManager.setFragmentResultListener(
             QuestionnaireFragment.QUESTIONNAIRE_RESPONSE_REQUEST_KEY,
             this,
@@ -62,34 +60,4 @@ class MainActivity : AppCompatActivity() {
             .add(R.id.container, fragment)
             .commit()
     }
-
-    private fun duplicateItemsInQuestionnaire (
-            questionnaire: Questionnaire,numberOfDuplicates: Int
-    ): Questionnaire{
-        var questionnaireWithDuplicates : Questionnaire = Questionnaire();
-        for ( i in 0..numberOfDuplicates){
-            val x  = i % 3
-            val tmp:Questionnaire.QuestionnaireItemComponent = modifyQuestionnaireItem(questionnaire.item.get(x).copy(),i)
-            questionnaireWithDuplicates.addItem(tmp)
-        }
-
-        return questionnaireWithDuplicates
-    }
-    private fun modifyQuestionnaireItem(questionnaireItem: Questionnaire.QuestionnaireItemComponent, index: Int):Questionnaire.QuestionnaireItemComponent{
-
-        if(questionnaireItem.hasItem()){
-            questionnaireItem.setText(questionnaireItem.text+"_"+index.toString())
-            questionnaireItem.setLinkId(index.toString()+"_dup");
-            for(internal_index in questionnaireItem.item.indices){
-                modifyQuestionnaireItem(questionnaireItem.item[internal_index], (index.toString()+internal_index.toString()).toInt())
-            }
-
-        }else{
-            questionnaireItem.setText(questionnaireItem.text+"_"+index.toString())
-            questionnaireItem.setLinkId(index.toString()+"_dup");
-        }
-        return questionnaireItem
-
-    }
-
 }
