@@ -29,7 +29,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import org.hl7.fhir.r4.model.DateType
 import org.hl7.fhir.r4.model.QuestionnaireResponse.QuestionnaireResponseItemAnswerComponent
-import java.lang.IllegalArgumentException
 
 object QuestionnaireItemDatePickerViewHolderFactory : QuestionnaireItemViewHolderFactory(
   R.layout.questionnaire_item_date_picker_view
@@ -51,7 +50,13 @@ object QuestionnaireItemDatePickerViewHolderFactory : QuestionnaireItemViewHolde
 
           // TODO: find a more robust way to do this as it is not guaranteed that the activity is
           // an AppCompatActivity.
-          val context = (itemView.context as ContextThemeWrapper).baseContext as AppCompatActivity
+          // The application is wrapped in a ContextThemeWrapper in QuestionnaireFragment and again
+          // in TextInputEditText during layout inflation. As a result, it is necessary to
+          // access the base context twice to retrieve the application object from the view's
+          // context.
+          val context =
+            ((itemView.context as ContextThemeWrapper).baseContext as ContextThemeWrapper)
+              .baseContext as AppCompatActivity
           DatePickerFragment().show(context.supportFragmentManager, DatePickerFragment.TAG)
           context.supportFragmentManager.setFragmentResultListener(
             DatePickerFragment.RESULT_REQUEST_KEY,

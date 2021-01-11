@@ -32,6 +32,13 @@ import androidx.recyclerview.widget.RecyclerView
 import ca.uhn.fhir.context.FhirContext
 import org.hl7.fhir.r4.model.Questionnaire
 
+/**
+ * The fragment to render a questionnaire and capture the user's response.
+ *
+ * @param questionnaire the questionnaire to render by this fragment
+ * @param themeId the theme ID to style the questionnaire. This theme must be an extension to
+ *    QuestionnaireTheme to ensure all the necessary attributes are defined.
+ */
 class QuestionnaireFragment(
   private val questionnaire: Questionnaire,
   @StyleRes private val themeId: Int?
@@ -46,7 +53,7 @@ class QuestionnaireFragment(
     savedInstanceState: Bundle?
   ): View {
     return inflater
-      .cloneInContext(ContextThemeWrapper(activity, themeId ?: R.style.QuestionnaireTheme as Int))
+      .cloneInContext(ContextThemeWrapper(activity, themeId ?: R.style.QuestionnaireTheme))
       .inflate(R.layout.questionnaire_fragment, container, false)
   }
 
