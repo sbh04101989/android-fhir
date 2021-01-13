@@ -18,6 +18,7 @@ package com.google.fhirengine.db.impl
 
 import androidx.room.TypeConverter
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum
+import com.google.fhirengine.db.impl.entities.LocalChange
 import java.math.BigDecimal
 import java.util.Calendar
 import org.hl7.fhir.r4.model.ResourceType
@@ -42,7 +43,7 @@ internal object DbTypeConverters {
     @JvmStatic
     @TypeConverter
     fun stringToResourceType(data: String) = resourceTypeLookup[data]
-            ?: throw IllegalArgumentException("invalid resource type: $data")
+        ?: throw IllegalArgumentException("invalid resource type: $data")
 
     @JvmStatic
     @TypeConverter
@@ -55,7 +56,7 @@ internal object DbTypeConverters {
     @JvmStatic
     @TypeConverter
     fun temporalPrecisionToInt(temporalPrecision: TemporalPrecisionEnum): Int =
-            temporalPrecision.calendarConstant
+        temporalPrecision.calendarConstant
 
     @JvmStatic
     @TypeConverter
@@ -69,5 +70,17 @@ internal object DbTypeConverters {
             Calendar.MILLISECOND -> TemporalPrecisionEnum.MILLI
             else -> throw IllegalArgumentException("Unknown TemporalPrecision int $intTp")
         }
+    }
+
+    @JvmStatic
+    @TypeConverter
+    fun localChangeTypeToInt(updateType: LocalChange.Type): Int {
+        return updateType.value
+    }
+
+    @JvmStatic
+    @TypeConverter
+    fun intToLocalChangeType(value: Int): LocalChange.Type {
+        return LocalChange.Type.from(value)
     }
 }
