@@ -24,43 +24,48 @@ import com.google.android.fhir.datacapture.QuestionnaireFragment
 import org.hl7.fhir.r4.model.Questionnaire
 
 class QuestionnaireActivity : AppCompatActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_questionnaire)
-
-    val jsonResource = assets
-      .open(intent.getStringExtra(QUESTIONNAIRE_FILE_PATH_KEY)!!)
-      .bufferedReader()
-      .use { it.readText() }
-    val jsonParser = FhirContext.forR4().newJsonParser()
-    val questionnaire = jsonParser.parseResource(Questionnaire::class.java, jsonResource)
-
-    // Modifications to the questionnaire
-    questionnaire.title = intent.getStringExtra(QUESTIONNAIRE_TITLE_KEY)
-
-    val fragment = QuestionnaireFragment(questionnaire)
-    supportFragmentManager.setFragmentResultListener(
-      QuestionnaireFragment.QUESTIONNAIRE_RESPONSE_REQUEST_KEY,
-      this,
-      object : FragmentResultListener {
-        override fun onFragmentResult(requestKey: String, result: Bundle) {
-          val dialogFragment = QuestionnaireResponseDialogFragment(
-            result.getString(QuestionnaireFragment.QUESTIONNAIRE_RESPONSE_BUNDLE_KEY)!!
-          )
-          dialogFragment.show(
-            supportFragmentManager,
-            QuestionnaireResponseDialogFragment.TAG
-          )
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_questionnaire)
+        
+        supportActionBar!!.apply {
+            title = intent.getStringExtra(QUESTIONNAIRE_TITLE_KEY)
+            setDisplayHomeAsUpEnabled(true)
         }
-      }
-    )
-    supportFragmentManager.beginTransaction()
-      .add(R.id.container, fragment)
-      .commit()
-  }
 
-  companion object {
-    const val QUESTIONNAIRE_TITLE_KEY = "questionnaire-title-key"
-    const val QUESTIONNAIRE_FILE_PATH_KEY = "questionnaire-file-path-key"
-  }
+        val jsonResource = assets
+            .open(intent.getStringExtra(QUESTIONNAIRE_FILE_PATH_KEY)!!)
+            .bufferedReader()
+            .use { it.readText() }
+        val jsonParser = FhirContext.forR4().newJsonParser()
+        val questionnaire = jsonParser.parseResource(Questionnaire::class.java, jsonResource)
+
+        // Modifications to the questionnaire
+        questionnaire.title = intent.getStringExtra(QUESTIONNAIRE_TITLE_KEY)
+
+        val fragment = QuestionnaireFragment(questionnaire)
+        supportFragmentManager.setFragmentResultListener(
+            QuestionnaireFragment.QUESTIONNAIRE_RESPONSE_REQUEST_KEY,
+            this,
+            object : FragmentResultListener {
+                override fun onFragmentResult(requestKey: String, result: Bundle) {
+                    val dialogFragment = QuestionnaireResponseDialogFragment(
+                        result.getString(QuestionnaireFragment.QUESTIONNAIRE_RESPONSE_BUNDLE_KEY)!!
+                    )
+                    dialogFragment.show(
+                        supportFragmentManager,
+                        QuestionnaireResponseDialogFragment.TAG
+                    )
+                }
+            }
+        )
+        supportFragmentManager.beginTransaction()
+            .add(R.id.container, fragment)
+            .commit()
+    }
+
+    companion object {
+        const val QUESTIONNAIRE_TITLE_KEY = "questionnaire-title-key"
+        const val QUESTIONNAIRE_FILE_PATH_KEY = "questionnaire-file-path-key"
+    }
 }
