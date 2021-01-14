@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="MyQuestionnaireTheme" parent="QuestionnaireTheme">
-        <item name="groupHeaderTextAppearance">@style/TextAppearance.MaterialComponents.Subtitle2</item>
+    <style name="Theme.MyQuestionnaire" parent="Theme.Questionnaire">
+        <item name="groupHeaderTextAppearance">@style/TextAppearance.MaterialComponents.Headline6</item>
     </style>
 </resources>
