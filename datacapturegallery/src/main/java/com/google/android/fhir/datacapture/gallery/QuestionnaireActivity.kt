@@ -17,46 +17,33 @@
 package com.google.android.fhir.datacapture.gallery
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentResultListener
-import ca.uhn.fhir.context.FhirContext
 import com.google.android.fhir.datacapture.QuestionnaireFragment
-import org.hl7.fhir.r4.model.Questionnaire
 
 class QuestionnaireActivity : AppCompatActivity() {
+    private val viewModel: QuestionnaireViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_questionnaire)
-        
+
         supportActionBar!!.apply {
             title = intent.getStringExtra(QUESTIONNAIRE_TITLE_KEY)
             setDisplayHomeAsUpEnabled(true)
         }
-
-        val jsonResource = assets
-            .open(intent.getStringExtra(QUESTIONNAIRE_FILE_PATH_KEY)!!)
-            .bufferedReader()
-            .use { it.readText() }
-        val jsonParser = FhirContext.forR4().newJsonParser()
-        val questionnaire = jsonParser.parseResource(Questionnaire::class.java, jsonResource)
-
-        // Modifications to the questionnaire
-        questionnaire.title = intent.getStringExtra(QUESTIONNAIRE_TITLE_KEY)
-
-        val fragment = QuestionnaireFragment(questionnaire)
+        val fragment = QuestionnaireFragment(viewModel.questionnaire)
         supportFragmentManager.setFragmentResultListener(
             QuestionnaireFragment.QUESTIONNAIRE_RESPONSE_REQUEST_KEY,
             this,
-            object : FragmentResultListener {
-                override fun onFragmentResult(requestKey: String, result: Bundle) {
-                    val dialogFragment = QuestionnaireResponseDialogFragment(
-                        result.getString(QuestionnaireFragment.QUESTIONNAIRE_RESPONSE_BUNDLE_KEY)!!
-                    )
-                    dialogFragment.show(
-                        supportFragmentManager,
-                        QuestionnaireResponseDialogFragment.TAG
-                    )
-                }
+            { requestKey, result ->
+                val dialogFragment = QuestionnaireResponseDialogFragment(
+                    result.getString(QuestionnaireFragment.QUESTIONNAIRE_RESPONSE_BUNDLE_KEY)!!
+                )
+                dialogFragment.show(
+                    supportFragmentManager,
+                    QuestionnaireResponseDialogFragment.TAG
+                )
             }
         )
         supportFragmentManager.beginTransaction()
@@ -69,3 +56,4 @@ class QuestionnaireActivity : AppCompatActivity() {
         const val QUESTIONNAIRE_FILE_PATH_KEY = "questionnaire-file-path-key"
     }
 }
+
